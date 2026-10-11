@@ -1,9 +1,11 @@
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//Cái này để tránh việc thiếu component Rigidbody2D và PlayerInput khi thêm Script này vào 1 GameObject
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(Collider2D))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
@@ -16,17 +18,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody2D rb;
+    private Collider2D playerCollider;
     private PlayerInput playerInput;
 
     private InputAction moveAction;
     private InputAction jumpAction;
 
     private float moveInput;
+    private bool downHeld;
     private bool jumpRequested;
+    private bool isDropping;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<Collider2D>();
         playerInput = GetComponent<PlayerInput>();
 
         moveAction = playerInput.actions.FindAction("Move", true);
@@ -35,8 +41,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        moveInput = moveAction.ReadValue<Vector2>().x;
-        if(jumpAction.WasPressedThisFrame())
+        Vector2 input = moveAction.ReadValue<Vector2>();
+
+        moveInput = input.x;
+        downHeld = input.y < -0.5f;
+
+        if (jumpAction.WasPressedThisFrame())
         {
             jumpRequested = true;
         }
@@ -45,25 +55,77 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 velocity = rb.linearVelocity;
-        //Di chuyển trái phải các thứ 
         velocity.x = moveInput * moveSpeed;
 
-        //Kiểm tra chạm đất
-        bool isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer) != null;
+        Collider2D ground = Physics2D.OverlapCircle(
+            groundCheck.position,
+            checkRadius,
+            groundLayer
+        );
 
-        //Nhảy khi đang đứng trên đất
-        if(jumpRequested && isGrounded)
+        if (jumpRequested && !isDropping && ground != null)
         {
-            velocity.y = jumpForce;
-        }            
+            if (downHeld)
+            {
+                // Chỉ rơi xuyên nền một chiều
+                if (ground.GetComponent<PlatformEffector2D>() != null)
+                {
+                    StartCoroutine(DropThrough(ground));
+                    velocity.y = -3f;
+                }
+            }
+            else
+            {
+                // Nhảy bình thường
+                velocity.y = jumpForce;
+            }
+        }
+
         jumpRequested = false;
         rb.linearVelocity = velocity;
     }
 
+    private IEnumerator DropThrough(Collider2D platform)
+    {
+        isDropping = true;
+
+        // Tạm bỏ qua va chạm với nền
+        Physics2D.IgnoreCollision(
+            playerCollider,
+            platform,
+            true
+        );
+
+        // Chờ cho đến khi Player đi qua nền hoàn toàn
+        yield return new WaitForFixedUpdate();
+
+        while (platform != null &&
+               playerCollider.bounds.max.y >= platform.bounds.min.y)
+        {
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Bật lại va chạm
+        if (platform != null)
+        {
+            Physics2D.IgnoreCollision(
+                playerCollider,
+                platform,
+                false
+            );
+        }
+
+        isDropping = false;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        if(groundCheck == null) return;
+        if (groundCheck == null) return;
+
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
+        Gizmos.DrawWireSphere(
+            groundCheck.position,
+            checkRadius
+        );
     }
 }
