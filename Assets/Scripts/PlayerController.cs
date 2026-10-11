@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool downHeld;
     private bool jumpRequested;
     private bool isDropping;
+    private bool isDead;
 
     private void Awake()
     {
@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (isDead) return;
+
         Vector2 input = moveAction.ReadValue<Vector2>();
 
         moveInput = input.x;
@@ -54,6 +56,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead) return;
+
         Vector2 velocity = rb.linearVelocity;
         velocity.x = moveInput * moveSpeed;
 
@@ -67,7 +71,6 @@ public class PlayerController : MonoBehaviour
         {
             if (downHeld)
             {
-                // Chỉ rơi xuyên nền một chiều
                 if (ground.GetComponent<PlatformEffector2D>() != null)
                 {
                     StartCoroutine(DropThrough(ground));
@@ -76,7 +79,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // Nhảy bình thường
                 velocity.y = jumpForce;
             }
         }
@@ -89,14 +91,8 @@ public class PlayerController : MonoBehaviour
     {
         isDropping = true;
 
-        // Tạm bỏ qua va chạm với nền
-        Physics2D.IgnoreCollision(
-            playerCollider,
-            platform,
-            true
-        );
+        Physics2D.IgnoreCollision(playerCollider, platform, true);
 
-        // Chờ cho đến khi Player đi qua nền hoàn toàn
         yield return new WaitForFixedUpdate();
 
         while (platform != null &&
@@ -105,17 +101,23 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        // Bật lại va chạm
         if (platform != null)
         {
-            Physics2D.IgnoreCollision(
-                playerCollider,
-                platform,
-                false
-            );
+            Physics2D.IgnoreCollision(playerCollider, platform, false);
         }
 
         isDropping = false;
+    }
+
+    public void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        rb.linearVelocity = Vector2.zero;
+        rb.simulated = false;
+
+        GameManager.Instance.GameOver();
     }
 
     private void OnDrawGizmosSelected()
@@ -123,9 +125,6 @@ public class PlayerController : MonoBehaviour
         if (groundCheck == null) return;
 
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(
-            groundCheck.position,
-            checkRadius
-        );
+        Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
     }
 }
