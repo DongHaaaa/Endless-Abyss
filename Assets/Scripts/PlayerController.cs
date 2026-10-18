@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//Cai nay de tu them component vao gameobject neu gameobject do ko co san (hay phet)
+//Cai nay de tu them component vao gameobject neu gameobject do ko co san
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Collider2D))]
