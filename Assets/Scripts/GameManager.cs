@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
-    //??? sorry but my brain is not understand this line, I just copy from the internet, I will learn more about it later
+    //Giúp script khác gọi đc gameover, v.v  
     public static GameManager Instance{get; private set;}
     private bool isGameOver;
     private void Awake()
