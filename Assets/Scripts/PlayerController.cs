@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         if(isDead) return;
         Vector2 input = moveAction.ReadValue<Vector2>();
         moveInput = input.x;
-        downHeld = input.y < -0.5f; // Nếu đang nhấn s (input.y < -0.5f, chưa hiểu lắm tại sao nó lại là -0.5f)
+        downHeld = input.y < -0.5f; // Nếu đang nhấn s (input.y < -0.5f) thì true
         if(jumpAction.WasPressedThisFrame())
         {
             jumpRequested = true;
