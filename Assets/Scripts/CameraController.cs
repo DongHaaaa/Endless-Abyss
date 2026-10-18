@@ -6,6 +6,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Transform player;
 
     [Header("Camera Settings")]
+    //biến này để xác định khoảng cách giữa player với camera, vì player đang đi xuông nên để camera ở dưới tý cho dễ nhìn
     [SerializeField] private float verticalOffset = 2f;
     [SerializeField] private float smoothTime = 0.2f;
     
