@@ -77,14 +77,16 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator DropThrough(Collider2D platform)
     {
         isDropping = true;
-        Physics2D.IgnoreCollision(playerCollider, platform, true);
-        yield return new WaitForFixedUpdate();
+        Physics2D.IgnoreCollision(playerCollider, platform, true); //Yêu cầu tạm thời bỏ qua va chạm giữa player với platfom
+        yield return new WaitForFixedUpdate(); //Đợi 1 frame
         while(platform != null && playerCollider.bounds.max.y >= platform.bounds.min.y)
         {
+            //Tọa độ trên của của player nằm trên tọa độ thấp nhất của platform thì return
             yield return new WaitForFixedUpdate();
         }
         if(platform != null)
         {
+            //Ko cho player đi xuyên platform nữa
             Physics2D.IgnoreCollision(playerCollider, platform, false);
         }
         isDropping = false;
@@ -104,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
         if(isDead) return;
         isDead = true;
         rb.linearVelocity = Vector2.zero;
-        rb.simulated = false;
+        rb.simulated = false; //tắt vật lý của player
         GameManager.Instance.GameOver();
     }
 
