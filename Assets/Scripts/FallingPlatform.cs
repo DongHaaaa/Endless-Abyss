@@ -19,9 +19,9 @@ public class FallingPlatform : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isTriggered) return;
+        if(isTriggered) return;
 
-        if (collision.gameObject.GetComponent<PlayerController>() != null)
+        if(collision.gameObject.GetComponent<PlayerController>() != null)
         {
             StartCoroutine(StartFalling());
         }
@@ -30,15 +30,11 @@ public class FallingPlatform : MonoBehaviour
     private IEnumerator StartFalling()
     {
         isTriggered = true;
-
-        // Chờ trước khi nền bắt đầu rơi
+        // Cho truoc khi nen roi
         yield return new WaitForSeconds(fallDelay);
-
-        // Bật mô phỏng trọng lực
+        // Bat mo gravity va cho phep nen roi
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = fallGravity;
 
-        // Dọn nền sau 3 giây
-        Destroy(gameObject, 3f);
     }
 }

@@ -2,16 +2,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+//Cai nay de tu them component vao gameobject neu gameobject do ko co san (hay phet)
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Collider2D))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Move")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
 
-    [Header("Ground Check")]
+    [Header("Gr Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float checkRadius = 0.15f;
     [SerializeField] private LayerMask groundLayer;
@@ -34,21 +35,16 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<Collider2D>();
         playerInput = GetComponent<PlayerInput>();
-
         moveAction = playerInput.actions.FindAction("Move", true);
         jumpAction = playerInput.actions.FindAction("Jump", true);
     }
-
     private void Update()
     {
-        if (isDead) return;
-
+        if(isDead) return;
         Vector2 input = moveAction.ReadValue<Vector2>();
-
         moveInput = input.x;
         downHeld = input.y < -0.5f;
-
-        if (jumpAction.WasPressedThisFrame())
+        if(jumpAction.WasPressedThisFrame())
         {
             jumpRequested = true;
         }
@@ -56,22 +52,15 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead) return;
-
+        if(isDead) return;
         Vector2 velocity = rb.linearVelocity;
         velocity.x = moveInput * moveSpeed;
-
-        Collider2D ground = Physics2D.OverlapCircle(
-            groundCheck.position,
-            checkRadius,
-            groundLayer
-        );
-
-        if (jumpRequested && !isDropping && ground != null)
+        Collider2D ground = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        if(jumpRequested && !isDropping && ground != null)
         {
-            if (downHeld)
+            if(downHeld)
             {
-                if (ground.GetComponent<PlatformEffector2D>() != null)
+                if(ground.GetComponent<PlatformEffector2D>() != null)
                 {
                     StartCoroutine(DropThrough(ground));
                     velocity.y = -3f;
@@ -82,48 +71,46 @@ public class PlayerController : MonoBehaviour
                 velocity.y = jumpForce;
             }
         }
-
         jumpRequested = false;
         rb.linearVelocity = velocity;
     }
-
     private IEnumerator DropThrough(Collider2D platform)
     {
         isDropping = true;
-
         Physics2D.IgnoreCollision(playerCollider, platform, true);
-
         yield return new WaitForFixedUpdate();
-
-        while (platform != null &&
-               playerCollider.bounds.max.y >= platform.bounds.min.y)
+        while(platform != null && playerCollider.bounds.max.y >= platform.bounds.min.y)
         {
             yield return new WaitForFixedUpdate();
         }
-
-        if (platform != null)
+        if(platform != null)
         {
             Physics2D.IgnoreCollision(playerCollider, platform, false);
         }
-
         isDropping = false;
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(isDead) return;
+        if(other.CompareTag("Hazard"))
+        {
+           Die();
+        }
     }
 
     public void Die()
     {
-        if (isDead) return;
-
+        if(isDead) return;
         isDead = true;
         rb.linearVelocity = Vector2.zero;
         rb.simulated = false;
-
         GameManager.Instance.GameOver();
     }
 
     private void OnDrawGizmosSelected()
     {
         if (groundCheck == null) return;
-
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
     }
