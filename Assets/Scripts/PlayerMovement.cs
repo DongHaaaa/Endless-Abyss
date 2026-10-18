@@ -28,7 +28,6 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
-
         moveAction = playerInput.actions.FindAction("Move", true);
         jumpAction = playerInput.actions.FindAction("Jump", true);
     }
@@ -36,7 +35,6 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>().x;
-
         if (jumpAction.WasPressedThisFrame())
         {
             jumpRequested = true;
@@ -46,35 +44,23 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 velocity = rb.linearVelocity;
-
         // Di chuyển ngang
         velocity.x = moveInput * moveSpeed;
-
         // Kiểm tra tiếp đất
-        bool isGrounded = Physics2D.OverlapCircle(
-            groundCheck.position,
-            checkRadius,
-            groundLayer
-        ) != null;
-
+        bool isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
         // Nhảy khi đang đứng trên đất
-        if (jumpRequested && isGrounded)
+        if(jumpRequested && isGrounded)
         {
             velocity.y = jumpForce;
         }
-
         jumpRequested = false;
         rb.linearVelocity = velocity;
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (groundCheck == null) return;
-
+        if(groundCheck == null) return;
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(
-            groundCheck.position,
-            checkRadius
-        );
+        Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
     }
 }
