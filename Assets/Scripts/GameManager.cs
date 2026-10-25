@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
         }
 
         Score = Mathf.FloorToInt(Mathf.Abs(deepestY)) * 2;
-
+        Debug.Log(Score);
         if(scoreText != null)
         {
             scoreText.text = $"Score: {Score}";
@@ -69,11 +69,13 @@ public class GameManager : MonoBehaviour
     {
         if(isGameOver) return;
         isGameOver = true;
+        Time.timeScale = 0f;
         Debug.Log("You non, Play again now");
     }
 
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

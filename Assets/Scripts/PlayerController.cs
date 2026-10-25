@@ -105,8 +105,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if(isDead) return;
         isDead = true;
-        rb.linearVelocity = Vector2.zero;
-        rb.simulated = false; //tắt vật lý của player
         GameManager.Instance.GameOver();
     }
 
