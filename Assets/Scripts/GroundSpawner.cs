@@ -4,7 +4,7 @@ public class GroundSpawner : MonoBehaviour
 {
     [Header("Ground")]
     [SerializeField] private GameObject groundPrefab;
-    [SerializeField] private float spawnRate = 0.6f;
+    [SerializeField] private float spawnRate = 2f;
     [SerializeField] private float spawnRangeX = 4f;
     [SerializeField] private float maxHorizontalGap = 2.5f;
     [Header("Spike")]
@@ -36,7 +36,8 @@ public class GroundSpawner : MonoBehaviour
         GameObject ground = Instantiate(groundPrefab, spawnPosition, Quaternion.identity);
         if(spikePrefab != null && Random.value < spikeChance)
         {
-            Instantiate(spikePrefab, ground.transform.position + Vector3.up * 0.8f, Quaternion.identity, ground.transform);
+            GameObject spike = Instantiate(spikePrefab, ground.transform.position + Vector3.up * 0.6f, Quaternion.identity, ground.transform);
+            spike.transform.localScale = new Vector3(0.35f, 0.35f, 1f);
         }
         lastX = spawnX;
     }
