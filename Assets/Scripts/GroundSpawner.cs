@@ -9,7 +9,6 @@ public class GroundSpawner : MonoBehaviour
     [SerializeField] private float maxHorizontalGap = 2.5f;
     [Header("Spike")]
     [SerializeField] private GameObject spikePrefab;
-    [Range(0f, 1f)]
     [SerializeField] private float spikeChance = 0.25f;
     private float timer;
     private float lastX;
@@ -29,6 +28,7 @@ public class GroundSpawner : MonoBehaviour
     }
     private void SpawnGround()
     {
+        //Đang sinh map vô hạn dựa theo ý tưởng của flappy bird, nhưng có vẻ hơi đang hơi lỏ =")
         float minX = Mathf.Max(transform.position.x - spawnRangeX, lastX - maxHorizontalGap);
         float maxX = Mathf.Min(transform.position.x + spawnRangeX, lastX + maxHorizontalGap);
         float spawnX = Random.Range(minX, maxX);

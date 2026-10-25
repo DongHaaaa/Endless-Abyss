@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
             deepestY = player.position.y;
         }
 
-        Score = Mathf.FloorToInt(Mathf.Abs(deepestY));
+        Score = Mathf.FloorToInt(Mathf.Abs(deepestY)) * 2;
 
         if(scoreText != null)
         {
