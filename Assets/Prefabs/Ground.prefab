@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4911738809551945885}
   - component: {fileID: 638131686421377436}
   - component: {fileID: 6713866157600558690}
+  - component: {fileID: 5211974725703386566}
   m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
@@ -159,3 +160,17 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
+--- !u!114 &5211974725703386566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8039164756791095990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a3754520e12a24f8b8812eeb62a105, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundMove
+  moveSpeed: 3
+  destroyY: 7

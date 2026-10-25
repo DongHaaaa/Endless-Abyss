@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gr Check")]
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private float checkRadius = 0.15f;
+    [SerializeField] private float checkRadius = 0.3f;
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody2D rb;
